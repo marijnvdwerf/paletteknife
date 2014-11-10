@@ -16,17 +16,14 @@
 
 package android.support.v7.graphics;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.os.AsyncTask;
-import android.support.v4.os.AsyncTaskCompat;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * A helper class to extract prominent colors from an image.
+ * A collection of prominent colors extracted from an image.
  * <p>
  * A number of colors with different profiles are extracted from the image:
  * <ul>
@@ -38,40 +35,8 @@ import java.util.List;
  *     <li>Muted Light</li>
  * </ul>
  * These can be retrieved from the appropriate getter method.
- *
- * <p>
- * Instances can be created with the synchronous factory methods {@link #generate(Bitmap)} and
- * {@link #generate(Bitmap, int)}.
- * <p>
- * These should be called on a background thread, ideally the one in
- * which you load your images on. Sometimes that is not possible, so asynchronous factory methods
- * have also been provided: {@link #generateAsync(Bitmap, PaletteAsyncListener)} and
- * {@link #generateAsync(Bitmap, int, PaletteAsyncListener)}. These can be used as so:
- *
- * <pre>
- * Palette.generateAsync(bitmap, new Palette.PaletteAsyncListener() {
- *     public void onGenerated(Palette palette) {
- *         // Do something with colors...
- *     }
- * });
- * </pre>
  */
-public final class Palette {
-
-    /**
-     * Listener to be used with {@link #generateAsync(Bitmap, PaletteAsyncListener)} or
-     * {@link #generateAsync(Bitmap, int, PaletteAsyncListener)}
-     */
-    public interface PaletteAsyncListener {
-
-        /**
-         * Called when the {@link Palette} has been generated.
-         */
-        void onGenerated(Palette palette);
-    }
-
-    private static final int CALCULATE_BITMAP_MIN_DIMENSION = 100;
-    private static final int DEFAULT_CALCULATE_NUMBER_COLORS = 16;
+public class Palette {
 
     private static final float TARGET_DARK_LUMA = 0.26f;
     private static final float MAX_DARK_LUMA = 0.45f;
@@ -93,9 +58,6 @@ public final class Palette {
     private static final float WEIGHT_LUMA = 6f;
     private static final float WEIGHT_POPULATION = 1f;
 
-    private static final float MIN_CONTRAST_TITLE_TEXT = 3.0f;
-    private static final float MIN_CONTRAST_BODY_TEXT = 4.5f;
-
     private final List<Swatch> mSwatches;
     private final int mHighestPopulation;
 
@@ -108,85 +70,7 @@ public final class Palette {
     private Swatch mLightVibrantSwatch;
     private Swatch mLightMutedColor;
 
-    /**
-     * Generate a {@link Palette} from a {@link Bitmap} using the default number of colors.
-     */
-    public static Palette generate(Bitmap bitmap) {
-        return generate(bitmap, DEFAULT_CALCULATE_NUMBER_COLORS);
-    }
-
-    /**
-     * Generate a {@link Palette} from a {@link Bitmap} using the specified {@code numColors}.
-     * Good values for {@code numColors} depend on the source image type.
-     * For landscapes, a good values are in the range 12-16. For images which are largely made up
-     * of people's faces then this value should be increased to 24-32.
-     *
-     * @param numColors The maximum number of colors in the generated palette. Increasing this
-     *                  number will increase the time needed to compute the values.
-     */
-    public static Palette generate(Bitmap bitmap, int numColors) {
-        checkBitmapParam(bitmap);
-        checkNumberColorsParam(numColors);
-
-        // First we'll scale down the bitmap so it's shortest dimension is 100px
-        final Bitmap scaledBitmap = scaleBitmapDown(bitmap);
-
-        // Now generate a quantizer from the Bitmap
-        ColorCutQuantizer quantizer = ColorCutQuantizer.fromBitmap(scaledBitmap, numColors);
-
-        // If created a new bitmap, recycle it
-        if (scaledBitmap != bitmap) {
-            scaledBitmap.recycle();
-        }
-
-        // Now return a ColorExtractor instance
-        return new Palette(quantizer.getQuantizedColors());
-    }
-
-    /**
-     * Generate a {@link Palette} asynchronously. {@link PaletteAsyncListener#onGenerated(Palette)}
-     * will be called with the created instance. The resulting {@link Palette} is the same as
-     * what would be created by calling {@link #generate(Bitmap)}.
-     *
-     * @param listener Listener to be invoked when the {@link Palette} has been generated.
-     *
-     * @return the {@link android.os.AsyncTask} used to asynchronously generate the instance.
-     */
-    public static AsyncTask<Bitmap, Void, Palette> generateAsync(
-            Bitmap bitmap, PaletteAsyncListener listener) {
-        return generateAsync(bitmap, DEFAULT_CALCULATE_NUMBER_COLORS, listener);
-    }
-
-    /**
-     * Generate a {@link Palette} asynchronously. {@link PaletteAsyncListener#onGenerated(Palette)}
-     * will be called with the created instance. The resulting {@link Palette} is the same as what
-     * would be created by calling {@link #generate(Bitmap, int)}.
-     *
-     * @param listener Listener to be invoked when the {@link Palette} has been generated.
-     *
-     * @return the {@link android.os.AsyncTask} used to asynchronously generate the instance.
-     */
-    public static AsyncTask<Bitmap, Void, Palette> generateAsync(
-            final Bitmap bitmap, final int numColors, final PaletteAsyncListener listener) {
-        checkBitmapParam(bitmap);
-        checkNumberColorsParam(numColors);
-        checkAsyncListenerParam(listener);
-
-        return AsyncTaskCompat.executeParallel(
-                new AsyncTask<Bitmap, Void, Palette>() {
-                    @Override
-                    protected Palette doInBackground(Bitmap... params) {
-                        return generate(params[0], numColors);
-                    }
-
-                    @Override
-                    protected void onPostExecute(Palette colorExtractor) {
-                        listener.onGenerated(colorExtractor);
-                    }
-                }, bitmap);
-    }
-
-    private Palette(List<Swatch> swatches) {
+    public Palette(List<Swatch> swatches) {
         mSwatches = swatches;
         mHighestPopulation = findMaxPopulation();
 
@@ -211,6 +95,7 @@ public final class Palette {
         // Now try and generate any missing colors
         generateEmptySwatches();
     }
+
 
     /**
      * Returns all of the swatches which make up the palette.
@@ -374,7 +259,7 @@ public final class Palette {
     }
 
     /**
-     * Find the {@link Swatch} with the highest population value and return the population.
+     * Find the {@link nl.marijnvdwerf.paletteknife.Swatch} with the highest population value and return the population.
      */
     private int findMaxPopulation() {
         int population = 0;
@@ -438,26 +323,6 @@ public final class Palette {
         return result;
     }
 
-    /**
-     * Scale the bitmap down so that it's smallest dimension is
-     * {@value #CALCULATE_BITMAP_MIN_DIMENSION}px. If {@code bitmap} is smaller than this, than it
-     * is returned.
-     */
-    private static Bitmap scaleBitmapDown(Bitmap bitmap) {
-        final int minDimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
-
-        if (minDimension <= CALCULATE_BITMAP_MIN_DIMENSION) {
-            // If the bitmap is small enough already, just return it
-            return bitmap;
-        }
-
-        final float scaleRatio = CALCULATE_BITMAP_MIN_DIMENSION / (float) minDimension;
-        return Bitmap.createScaledBitmap(bitmap,
-                Math.round(bitmap.getWidth() * scaleRatio),
-                Math.round(bitmap.getHeight() * scaleRatio),
-                false);
-    }
-
     private static float createComparisonValue(float saturation, float targetSaturation,
             float luma, float targetLuma,
             int population, int highestPopulation) {
@@ -504,32 +369,15 @@ public final class Palette {
         return sum / sumWeight;
     }
 
-    private static void checkBitmapParam(Bitmap bitmap) {
-        if (bitmap == null) {
-            throw new IllegalArgumentException("bitmap can not be null");
-        }
-        if (bitmap.isRecycled()) {
-            throw new IllegalArgumentException("bitmap can not be recycled");
-        }
-    }
-
-    private static void checkNumberColorsParam(int numColors) {
-        if (numColors < 1) {
-            throw new IllegalArgumentException("numColors must be 1 of greater");
-        }
-    }
-
-    private static void checkAsyncListenerParam(PaletteAsyncListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("listener can not be null");
-        }
-    }
-
     /**
      * Represents a color swatch generated from an image's palette. The RGB color can be retrieved
      * by calling {@link #getRgb()}.
      */
     public static final class Swatch {
+
+        private static final float MIN_CONTRAST_TITLE_TEXT = 3.0f;
+        private static final float MIN_CONTRAST_BODY_TEXT = 4.5f;
+
         private final int mRed, mGreen, mBlue;
         private final int mRgb;
         private final int mPopulation;
@@ -540,7 +388,7 @@ public final class Palette {
 
         private float[] mHsl;
 
-        Swatch(int rgbColor, int population) {
+        public Swatch(int rgbColor, int population) {
             mRed = Color.red(rgbColor);
             mGreen = Color.green(rgbColor);
             mBlue = Color.blue(rgbColor);
@@ -548,7 +396,7 @@ public final class Palette {
             mPopulation = population;
         }
 
-        Swatch(int red, int green, int blue, int population) {
+        public Swatch(int red, int green, int blue, int population) {
             mRed = red;
             mGreen = green;
             mBlue = blue;

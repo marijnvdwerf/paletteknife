@@ -12,6 +12,6 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<manifest package="android.support.v7.palette">
+<manifest package="nl.codesoup.paletteknife">
     <!-- empty element as workaround for https://code.google.com/p/android/issues/detail?id=77890 -->
 </manifest>

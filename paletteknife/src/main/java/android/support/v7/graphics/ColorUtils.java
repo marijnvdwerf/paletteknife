@@ -18,7 +18,7 @@ package android.support.v7.graphics;
 
 import android.graphics.Color;
 
-final class ColorUtils {
+public class ColorUtils {
 
     private static final int MIN_ALPHA_SEARCH_MAX_ITERATIONS = 10;
     private static final int MIN_ALPHA_SEARCH_PRECISION = 10;
@@ -28,7 +28,7 @@ final class ColorUtils {
     /**
      * Composite two potentially translucent colors over each other and returns the result.
      */
-    private static int compositeColors(int fg, int bg) {
+    public static int compositeColors(int fg, int bg) {
         final float alpha1 = Color.alpha(fg) / 255f;
         final float alpha2 = Color.alpha(bg) / 255f;
 
@@ -63,7 +63,7 @@ final class ColorUtils {
      *
      * Formula defined here: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef
      */
-    private static double calculateContrast(int foreground, int background) {
+    public static double calculateContrast(int foreground, int background) {
         if (Color.alpha(background) != 255) {
             throw new IllegalArgumentException("background can not be translucent");
         }
@@ -169,7 +169,7 @@ final class ColorUtils {
                 h = ((rf - gf) / deltaMaxMin) + 4f;
             }
 
-            s =  deltaMaxMin / (1f - Math.abs(2f * l - 1f));
+            s = deltaMaxMin / (1f - Math.abs(2f * l - 1f));
         }
 
         hsl[0] = (h * 60f) % 360f;
@@ -177,7 +177,7 @@ final class ColorUtils {
         hsl[2] = l;
     }
 
-    static int HSLtoRGB (float[] hsl) {
+    static int HSLtoRGB(float[] hsl) {
         final float h = hsl[0];
         final float s = hsl[1];
         final float l = hsl[2];

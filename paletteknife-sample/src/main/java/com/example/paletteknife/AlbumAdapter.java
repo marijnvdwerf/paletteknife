@@ -9,7 +9,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import nl.marijnvdwerf.paletteknife.GoogleQuantizeStrategy;
+import nl.marijnvdwerf.paletteknife.PaletteKnife;
+import nl.marijnvdwerf.paletteknife.ScaleResizeStrategy;
+
 public class AlbumAdapter extends BaseAdapter {
+
+    private static final PaletteKnife GOOGLE_PALETTE_KNIFE = new PaletteKnife.Builder()
+            .setQuantizeStrategy(new GoogleQuantizeStrategy())
+            .setResizeStrategy(new ScaleResizeStrategy())
+            .build();
 
     private static final Album[] ALBUMS = new Album[]{
             new Album("Pharrell Williams", "GIRL",
@@ -68,17 +77,18 @@ public class AlbumAdapter extends BaseAdapter {
         viewHolder.name.setText(album.name);
         viewHolder.artist.setText(album.artist);
 
-        Palette.generateAsync(albumCover, new Palette.PaletteAsyncListener() {
-            @Override
-            public void onGenerated(Palette palette) {
-                Palette.Swatch swatch = palette.getVibrantSwatch();
-                if (swatch == null) {
-                    return;
-                }
+        GOOGLE_PALETTE_KNIFE
+                .generatePaletteAsync(albumCover, new PaletteKnife.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        Palette.Swatch swatch = palette.getVibrantSwatch();
+                        if (swatch == null) {
+                            return;
+                        }
 
-                viewHolder.textContainer.setBackgroundColor(swatch.getRgb());
-            }
-        });
+                        viewHolder.textContainer.setBackgroundColor(swatch.getRgb());
+                    }
+                });
 
         return viewHolder.itemView;
     }

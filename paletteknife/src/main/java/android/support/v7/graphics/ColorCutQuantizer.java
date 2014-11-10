@@ -16,7 +16,6 @@
 
 package android.support.v7.graphics;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v7.graphics.Palette.Swatch;
 import android.util.SparseIntArray;
@@ -41,7 +40,7 @@ import java.util.PriorityQueue;
  * This means that the color space is divided into distinct colors, rather than representative
  * colors.
  */
-final class ColorCutQuantizer {
+public class ColorCutQuantizer {
 
     private static final String LOG_TAG = ColorCutQuantizer.class.getSimpleName();
 
@@ -60,28 +59,10 @@ final class ColorCutQuantizer {
     private final List<Swatch> mQuantizedColors;
 
     /**
-     * Factory-method to generate a {@link ColorCutQuantizer} from a {@link Bitmap} object.
-     *
-     * @param bitmap Bitmap to extract the pixel data from
-     * @param maxColors The maximum number of colors that should be in the result palette.
-     */
-    static ColorCutQuantizer fromBitmap(Bitmap bitmap, int maxColors) {
-        final int width = bitmap.getWidth();
-        final int height = bitmap.getHeight();
-
-        final int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-
-        return new ColorCutQuantizer(new ColorHistogram(pixels), maxColors);
-    }
-
-    /**
-     * Private constructor.
-     *
      * @param colorHistogram histogram representing an image's pixel data
-     * @param maxColors The maximum number of colors that should be in the result palette.
+     * @param maxColors      The maximum number of colors that should be in the result palette.
      */
-    private ColorCutQuantizer(ColorHistogram colorHistogram, int maxColors) {
+    public ColorCutQuantizer(ColorHistogram colorHistogram, int maxColors) {
         final int rawColorCount = colorHistogram.getNumberOfColors();
         final int[] rawColors = colorHistogram.getColors();
         final int[] rawColorCounts = colorHistogram.getColorCounts();
@@ -117,7 +98,7 @@ final class ColorCutQuantizer {
     /**
      * @return the list of quantized colors
      */
-    List<Swatch> getQuantizedColors() {
+    public List<Swatch> getQuantizedColors() {
         return mQuantizedColors;
     }
 
