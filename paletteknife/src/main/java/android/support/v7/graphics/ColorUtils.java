@@ -45,7 +45,7 @@ public class ColorUtils {
      *
      * Formula defined here: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
      */
-    private static double calculateLuminance(int color) {
+    public static double calculateLuminance(int color) {
         double red = Color.red(color) / 255d;
         red = red < 0.03928 ? red / 12.92 : Math.pow((red + 0.055) / 1.055, 2.4);
 
@@ -145,7 +145,7 @@ public class ColorUtils {
         return -1;
     }
 
-    static void RGBtoHSL(int r, int g, int b, float[] hsl) {
+    public static void RGBtoHSL(int r, int g, int b, float[] hsl) {
         final float rf = r / 255f;
         final float gf = g / 255f;
         final float bf = b / 255f;
@@ -177,7 +177,7 @@ public class ColorUtils {
         hsl[2] = l;
     }
 
-    static int HSLtoRGB(float[] hsl) {
+    public static int HSLtoRGB(float[] hsl) {
         final float h = hsl[0];
         final float s = hsl[1];
         final float l = hsl[2];

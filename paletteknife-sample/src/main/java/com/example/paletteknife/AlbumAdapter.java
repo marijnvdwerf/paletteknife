@@ -1,7 +1,6 @@
 package com.example.paletteknife;
 
 import android.graphics.Bitmap;
-import android.support.v7.graphics.Palette;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,16 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import nl.marijnvdwerf.paletteknife.GoogleQuantizeStrategy;
-import nl.marijnvdwerf.paletteknife.PaletteKnife;
-import nl.marijnvdwerf.paletteknife.ScaleResizeStrategy;
-
-public class AlbumAdapter extends BaseAdapter {
-
-    private static final PaletteKnife GOOGLE_PALETTE_KNIFE = new PaletteKnife.Builder()
-            .setQuantizeStrategy(new GoogleQuantizeStrategy())
-            .setResizeStrategy(new ScaleResizeStrategy())
-            .build();
+public abstract class AlbumAdapter extends BaseAdapter {
 
     private static final Album[] ALBUMS = new Album[]{
             new Album("Pharrell Williams", "GIRL",
@@ -71,29 +61,17 @@ public class AlbumAdapter extends BaseAdapter {
         }
 
         Album album = getItem(position);
-        Bitmap albumCover = AssetUtils.getBitmapFromAsset(viewHolder.itemView.getContext(),
-                album.getCoverPath());
+        Bitmap albumCover = AssetUtils.getBitmapFromAsset(viewHolder.itemView.getContext(), album.getCoverPath());
         viewHolder.cover.setImageBitmap(albumCover);
         viewHolder.name.setText(album.name);
         viewHolder.artist.setText(album.artist);
 
-        GOOGLE_PALETTE_KNIFE
-                .generatePaletteAsync(albumCover, new PaletteKnife.PaletteAsyncListener() {
-                    @Override
-                    public void onGenerated(Palette palette) {
-                        Palette.Swatch swatch = palette.getVibrantSwatch();
-                        if (swatch == null) {
-                            return;
-                        }
-
-                        viewHolder.textContainer.setBackgroundColor(swatch.getRgb());
-                    }
-                });
+        onInflatedView(viewHolder, albumCover);
 
         return viewHolder.itemView;
     }
 
-    private class AlbumViewHolder {
+    public class AlbumViewHolder {
         public final View itemView;
         public final TextView name;
         public final TextView artist;
@@ -108,4 +86,6 @@ public class AlbumAdapter extends BaseAdapter {
             this.textContainer = itemView.findViewById(R.id.album_textcontainer);
         }
     }
+
+    public abstract void onInflatedView(AlbumViewHolder albumViewHolder, Bitmap albumCover);
 }

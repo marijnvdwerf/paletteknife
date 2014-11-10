@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.widget.GridView;
 
 
-public class MainActivity extends Activity {
+public class PanicPaletteActivity extends Activity {
 
     private GridView _grid;
 
@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         _grid = (GridView) findViewById(R.id.grid);
-        _grid.setAdapter(new AlbumAdapter());
+        _grid.setAdapter(new PanicAlbumAdapter());
     }
 
 }
