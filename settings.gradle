@@ -1,1 +1,2 @@
 include ':paletteknife'
+include ':paletteknife-sample'

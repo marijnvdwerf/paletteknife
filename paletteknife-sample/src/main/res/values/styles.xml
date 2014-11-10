@@ -1,0 +1,12 @@
+<resources>
+
+    <style name="BaseTheme" parent="android:Theme.Holo.NoActionBar">
+        <!-- Base application theme. -->
+    </style>
+
+    <style name="AppTheme" parent="BaseTheme">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/Gray900</item>
+    </style>
+
+</resources>
