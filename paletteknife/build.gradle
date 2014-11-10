@@ -1,0 +1,15 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
+
+    defaultConfig {
+        applicationId "nl.codesoup.paletteknife"
+        minSdkVersion 7
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:21.0.0'
+}
